@@ -1,0 +1,72 @@
+name: Telegram Standup Reports
+
+on:
+  push:
+    paths:
+      - 'docs/reports/*.md'
+
+jobs:
+  send-report:
+    name: Send Agent Report to Telegram
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Нужно, чтобы сравнить текущий коммит с предыдущим
+
+      - name: Detect changed reports and send to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          BRANCH_NAME: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          python3 - << 'EOF'
+          import os, subprocess, urllib.request, urllib.parse, json
+
+          token = os.environ["TELEGRAM_BOT_TOKEN"]
+          chat_id = os.environ["TELEGRAM_CHAT_ID"]
+          branch = os.environ["BRANCH_NAME"]
+          sha = os.environ["COMMIT_SHA"][:7]
+
+          # Находим только те файлы отчетов, которые изменились в последнем пуше
+          diff = subprocess.check_output(
+              ["git", "diff", "--name-only", "HEAD~1", "HEAD", "--", "docs/reports/"],
+              text=True
+          ).strip().splitlines()
+
+          if not diff:
+              print("Изменений в отчетах не найдено.")
+              exit(0)
+
+          for file_path in diff:
+              if not os.path.exists(file_path):
+                  continue
+
+              with open(file_path, "r", encoding="utf-8") as f:
+                  content = f.read().strip()
+
+              if not content:
+                  continue
+
+              # Добавляем шапку с веткой и обрезаем до лимита Telegram (4096 символов)
+              header = f"🌿 Ветка: {branch} ({sha})\n\n"
+              message = (header + content)[:4000]
+
+              url = f"https://telegram.org{token}/sendMessage"
+              payload = json.dumps({
+                  "chat_id": chat_id,
+                  "text": message
+              }).encode("utf-8")
+
+              req = urllib.request.Request(
+                  url,
+                  data=payload,
+                  headers={"Content-Type": "application/json"}
+              )
+              with urllib.request.urlopen(req) as resp:
+                  print(f"Отправлен отчет {file_path}: HTTP {resp.status}")
+          EOF
