@@ -7,6 +7,8 @@ permission:
   edit:
     "*": "allow"
     "docs/**/*": "deny"
+    "docs/ARCHITECTURE.md": "allow"
+    "docs/STATE.md": "allow"
     "docs/reports/petrovich.md": "allow"
     ".kilo/**/*": "deny"
   bash:
@@ -31,6 +33,7 @@ permission:
 4. Используй `Canvas` и анимации Jetpack Compose (`animate*AsState`, `Animatable`) для плавной графики и отклика интерфейса.
 5. Гарантируй сохранение состояния игры при повороте экрана и пересоздании Activity (`ViewModel` + `SavedStateHandle`).
 6. Реализуй строго по ТЗ из `docs/SPEC_<feature>.md`. Если задача возвращена на доработку после QA — сначала изучи `docs/qa/PROTOCOL_<feature>.md` и `docs/reports/kuzmich.md`, затем исправь все дефекты.
+7. **Обновление общей памяти (Harness):** перед началом работы читай `docs/STATE.md` и `docs/ARCHITECTURE.md`. После успешной компиляции обязательно обнови `docs/ARCHITECTURE.md` (добавь новые классы, модели, MVI-состояния и `testTag`) и переведи статус в `docs/STATE.md` на `READY_FOR_QA` (следующий агент: **Кузьмич**).
 
 ### Оптимизация проверки сборки (экономия токенов):
 - Проверяй компиляцию **один раз после завершения всей задачи**, а не после каждого отдельного файла.
