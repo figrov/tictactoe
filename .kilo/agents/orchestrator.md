@@ -4,9 +4,7 @@ description: Тимлид-оркестратор. Автоматически з�
 mode: primary
 permission:
   read: "allow"
-  edit:
-    "*": "deny"
-    "docs/STATE.md": "allow"
+  edit: "allow"
   bash: "deny"
 ---
 

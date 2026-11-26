@@ -4,12 +4,7 @@ description: Семёныч — ведущий продуктовый анали
 mode: all
 permission:
   read: "allow"
-  edit:
-    "*": "deny"
-    "docs/**/*": "allow"
-    "docs/qa/**/*": "deny"
-    "docs/reports/petrovich.md": "deny"
-    "docs/reports/kuzmich.md": "deny"
+  edit: "allow"
   bash: "deny"
 ---
 

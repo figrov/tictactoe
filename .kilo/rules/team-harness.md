@@ -1,4 +1,4 @@
-﻿# Протокол командной работы (Team Harness: Семёныч, Петрович, Кузьмич)
+# Протокол командной работы (Team Harness: Семёныч, Петрович, Кузьмич)
 
 Мы разрабатываем Android-игру (Kotlin, Jetpack Compose, MVI) силами трех специализированных агентов под управлением Тимлида-оркестратора. Единый источник правды о проекте хранится в папке `docs/`.
 
@@ -17,11 +17,17 @@
    - Читает `STATE.md`, `ARCHITECTURE.md`, `SPEC_<feature>.md` (и `docs/qa/PROTOCOL_<feature>.md`, если это возврат с QA).
    - Пишет код в `app/src/main/`, проверяет компиляцию, обновляет карту классов и `testTag` в `ARCHITECTURE.md`, перезаписывает `docs/reports/petrovich.md`.
    - Ставит в `STATE.md` статус: `READY_FOR_QA` (следующий: **Кузьмич**).
-3. **Этап 3 — Тестирование (`qa-engineer` / Кузьмич):**
+3. **Этап 3 — Тестирование и Автопилот-релиз (`qa-engineer` / Кузьмич):**
    - Читает `STATE.md`, `SPEC_<feature>.md`, `ARCHITECTURE.md`.
    - Пишет Unit- и Compose UI-тесты, запускает `testDebugUnitTest`, оформляет `docs/qa/PROTOCOL_<feature>.md`, перезаписывает `docs/reports/kuzmich.md`.
-   - Если 0 `Blocker`/`Critical` багов -> ставит в `STATE.md` статус `APPROVED` (фича готова к PR и мержу в `main`).
    - Если найдены дефекты -> увеличивает счетчик `QA_ATTEMPT` в `STATE.md` и ставит статус `REJECTED` (возврат **Петровичу**).
+   - **Если 0 `Blocker`/`Critical` багов (Автопилот):**
+     1. Ставит в `STATE.md` статус `APPROVED`.
+     2. Проверяет текущую ветку (`git branch --show-current`). Если ветка НЕ `main`, выполняет:
+        - `git add .`
+        - `git commit -m "feat(game): complete <feature> and QA protocol"`
+        - `git push -u origin HEAD`
+     3. Если установлен GitHub CLI (`gh`), создает Pull Request в `main` командой `gh pr create --base main --fill` (иначе выводит в отчет ссылку на создание PR).
 
 ## 3. Защита от бесконечного цикла (Circuit Breaker)
 - Максимум **3 круга исправлений** (`QA_ATTEMPT <= 3`) на одну фичу.
