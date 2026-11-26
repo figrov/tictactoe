@@ -35,15 +35,4 @@ class MainActivity : ComponentActivity() {
         // val gameStateJson = Gson().toJson(uiState)
         // outState.putString("gameState", gameStateJson)
     }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-
-        // Восстанавливаем состояние игры из Bundle
-        // В будущем можно добавить восстановление через SavedStateHandle
-        // savedInstanceState?.getString("gameState")?.let { gameStateJson ->
-        //     val restoredState = Gson().fromJson(gameStateJson, UiState::class.java)
-        //     viewModel.restoreState(restoredState)
-        // }
-    }
 }

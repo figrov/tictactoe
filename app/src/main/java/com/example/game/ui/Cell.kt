@@ -10,12 +10,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.game.domain.CellState
-import com.example.game.domain.Player
 import androidx.compose.ui.test.Tag
 
 /**
@@ -59,7 +56,6 @@ fun Cell(
         modifier = modifier
             .size(100.dp)
             .testTag("board_cell_$index")
-            .clip(RoundedCornerShape(16.dp))
             .background(
                 if (isWinningCell)
                     MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)

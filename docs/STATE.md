@@ -3,7 +3,7 @@
 - **Активная ветка:** `feat/core-gameplay`
 - **Текущая фича:** `FEAT-01` (Core Gameplay 3x3)
 - **Спецификация:** `docs/SPEC_core_gameplay.md`
-- **Протокол QA:** —
+- **Протокол QA:** `docs/qa/PROTOCOL_core_gameplay.md`
 - **Текущий статус:** `APPROVED`
 - **Следующий агент:** —
 - **Счетчик попыток QA (`QA_ATTEMPT`):** `3 / 3` (все баги исправлены)

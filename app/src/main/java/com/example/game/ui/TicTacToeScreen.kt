@@ -1,6 +1,7 @@
 package com.example.game.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.*
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -13,15 +14,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.test.Tag
 import com.example.game.domain.GameBoard
 import com.example.game.domain.CellState
 import com.example.game.domain.Player
 import com.example.game.presentation.TicTacToeViewModel
 import com.example.game.presentation.UiIntent
 import com.example.game.presentation.UiState
-import androidx.compose.ui.test.Tag
 
 /**
  * Основной экран игры
@@ -226,7 +229,6 @@ fun GameOverScreen(
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold,
-            fontSize = 32.sp,
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
@@ -301,7 +303,6 @@ fun GameBoard(
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
                 shape = RoundedCornerShape(16.dp)
             )
-            .clip(RoundedCornerShape(16.dp))
             .testTag("grid"),
         contentAlignment = Alignment.Center
     ) {
@@ -315,7 +316,6 @@ fun GameBoard(
                         index = index,
                         cellState = cells[index],
                         isWinningCell = false,
-                        isCellAnimating = false,
                         onCellClick = onCellClick,
                         modifier = Modifier
                             .align(
@@ -324,13 +324,12 @@ fun GameBoard(
                                 else Alignment.CenterStart
                             )
                             .offset(
-                                androidx.compose.ui.unit.dp(
-                                    when (col) {
-                                        0 -> 0.dp
-                                        1 -> 0.dp
-                                        2 -> 0.dp
-                                    }
-                                )
+                                when (col) {
+                                    0 -> 0.dp
+                                    1 -> 0.dp
+                                    2 -> 0.dp
+                                    else -> 0.dp
+                                }
                             )
                             .padding(1.dp)
                     )

@@ -3,7 +3,7 @@ package com.example.game.domain
 /**
  * Игровое поле (внутреннее состояние)
  * @property cells Состояния всех 9 клеток
- * @property currentPlayer Текущий игрок
+ * @property currentPlayer Текущий игрок (X или O)
  * @property scoreX Счет игрока X
  * @property scoreO Счет игрока O
  * @property drawCount Счет ничьих

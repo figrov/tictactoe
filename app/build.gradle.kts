@@ -79,6 +79,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
 
+    // Kotlinx Serialization (для сохранения состояния)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.2")
+
     // Unit-тесты (JUnit 5 + MockK + Turbine + Coroutines)
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

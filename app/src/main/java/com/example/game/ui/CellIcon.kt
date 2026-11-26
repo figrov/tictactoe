@@ -1,6 +1,8 @@
 package com.example.game.ui
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.animateFloatAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size

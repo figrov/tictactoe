@@ -1,5 +1,8 @@
 package com.example.game.ui
 
+import androidx.compose.animation.animateFloatAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -31,14 +34,8 @@ fun WinLine(
     LaunchedEffect(winningCells, board.cells) {
         if (winningCells.isNotEmpty()) {
             // Запускаем анимацию появления линии
-            isAnimating.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(
-                    durationMillis = 300,
-                    easing = FastOutSlowInEasing
-                ),
-                label = "WinLineAnimation"
-            )
+            kotlinx.coroutines.delay(100)
+            isAnimating = 1f
         }
     }
 
