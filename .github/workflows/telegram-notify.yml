@@ -25,12 +25,17 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
         run: |
           python3 - << 'EOF'
-          import os, subprocess, urllib.request, json
+          import os, subprocess, urllib.request, urllib.error, json
 
-          token = os.environ["TELEGRAM_BOT_TOKEN"].strip()
-          chat_id = os.environ["TELEGRAM_CHAT_ID"].strip()
+          raw_token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+          token = raw_token.strip().strip('"').strip("'").removeprefix("bot")
+          chat_id = os.environ.get("TELEGRAM_CHAT_ID", "").strip().strip('"').strip("'")
           branch = os.environ["BRANCH_NAME"]
           sha = os.environ["COMMIT_SHA"][:7]
+
+          print(f"Диагностика: длина токена = {len(token)}, начинается на '{token[:4]}...', длина chat_id = {len(chat_id)}")
+          if not token or not chat_id:
+              raise RuntimeError("ОШИБКА: TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID пустые! Проверь, что они в разделе Secrets (а не Variables) и имена написаны без опечаток.")
 
           diff = subprocess.check_output(
               ["git", "diff", "--name-only", "HEAD~1", "HEAD", "--", "docs/reports/"],
@@ -66,9 +71,13 @@ jobs:
                   data=payload,
                   headers={"Content-Type": "application/json"}
               )
-              with urllib.request.urlopen(req) as resp:
-                  body = json.loads(resp.read().decode("utf-8"))
-                  if not body.get("ok"):
-                      raise RuntimeError(f"Telegram API error: {body}")
-                  print(f"Успешно отправлен отчет {file_path}")
+              try:
+                  with urllib.request.urlopen(req) as resp:
+                      body = json.loads(resp.read().decode("utf-8"))
+                      if not body.get("ok"):
+                          raise RuntimeError(f"Telegram API error: {body}")
+                      print(f"Успешно отправлен отчет {file_path}")
+              except urllib.error.HTTPError as e:
+                  err_body = e.read().decode("utf-8", errors="replace")
+                  raise RuntimeError(f"Telegram HTTP {e.code}: {err_body}")
           EOF
