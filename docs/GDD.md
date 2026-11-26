@@ -9,5 +9,5 @@
 
 | ID | Фича | Спецификация | Статус |
 | :--- | :--- | :--- | :--- |
-| `FEAT-01` | Базовое игровое поле 3x3 (PvP на одном экране) | `docs/SPEC_core_gameplay.md` | `[Planned]` |
+| `FEAT-01` | Базовое игровое поле 3x3 (PvP на одном экране) | `docs/SPEC_core_gameplay.md` | `[In Progress]` |
 | `FEAT-02` | ИИ-соперник (3 уровня сложности) | `docs/SPEC_bot_ai.md` | `[Planned]` |
