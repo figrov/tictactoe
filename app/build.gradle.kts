@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.game"
+    namespace = "com.example.game" // <-- Оставь свой package name, если он другой (например com.example.tictactoe)
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.game"
+        applicationId = "com.example.game" // <-- Оставь свой applicationId, если он другой
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -27,61 +27,55 @@ android {
             )
         }
     }
-    
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-    
+
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
-    
+
     buildFeatures {
         compose = true
     }
-    
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15"
-    }
-    
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
         }
     }
-}
-
-configurations {
-    all {
-        resolutionStrategy {
-            force("org.junit.platform:junit-platform-engine:1.10.2")
-        }
-    }
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
 }
 
 dependencies {
-    // Core
-    implementation(libs.androidx.core.ktx)
-    
-    // Compose
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.material3)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-    
-    // Testing
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.mockk)
-    testImplementation(libs.turbine)
-    testImplementation(libs.kotlinx.coroutines.test)
-    
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.junit.jupiter)
+    // Базовые Android и Lifecycle
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+    implementation("androidx.activity:activity-compose:1.9.2")
+
+    // Jetpack Compose (актуальный рабочий BOM)
+    val composeBom = platform("androidx.compose:compose-bom:2024.09.03")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+
+    // Unit-тесты (JUnit 5 + MockK + Turbine + Coroutines)
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("io.mockk:mockk:1.13.12")
+    testImplementation("app.cash.turbine:turbine:1.1.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+
+    // Compose UI-тесты (для облачного эмулятора)
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
