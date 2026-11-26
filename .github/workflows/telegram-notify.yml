@@ -15,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2 # Нужно, чтобы сравнить текущий коммит с предыдущим
+          fetch-depth: 2
 
       - name: Detect changed reports and send to Telegram
         env:
@@ -25,14 +25,13 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
         run: |
           python3 - << 'EOF'
-          import os, subprocess, urllib.request, urllib.parse, json
+          import os, subprocess, urllib.request, json
 
-          token = os.environ["TELEGRAM_BOT_TOKEN"]
-          chat_id = os.environ["TELEGRAM_CHAT_ID"]
+          token = os.environ["TELEGRAM_BOT_TOKEN"].strip()
+          chat_id = os.environ["TELEGRAM_CHAT_ID"].strip()
           branch = os.environ["BRANCH_NAME"]
           sha = os.environ["COMMIT_SHA"][:7]
 
-          # Находим только те файлы отчетов, которые изменились в последнем пуше
           diff = subprocess.check_output(
               ["git", "diff", "--name-only", "HEAD~1", "HEAD", "--", "docs/reports/"],
               text=True
@@ -42,6 +41,7 @@ jobs:
               print("Изменений в отчетах не найдено.")
               exit(0)
 
+          host = "api." + "telegram.org"
           for file_path in diff:
               if not os.path.exists(file_path):
                   continue
@@ -52,11 +52,10 @@ jobs:
               if not content:
                   continue
 
-              # Добавляем шапку с веткой и обрезаем до лимита Telegram (4096 символов)
               header = f"🌿 Ветка: {branch} ({sha})\n\n"
               message = (header + content)[:4000]
 
-              url = f"https://telegram.org{token}/sendMessage"
+              url = f"https://{host}/bot{token}/sendMessage"
               payload = json.dumps({
                   "chat_id": chat_id,
                   "text": message
@@ -68,5 +67,8 @@ jobs:
                   headers={"Content-Type": "application/json"}
               )
               with urllib.request.urlopen(req) as resp:
-                  print(f"Отправлен отчет {file_path}: HTTP {resp.status}")
+                  body = json.loads(resp.read().decode("utf-8"))
+                  if not body.get("ok"):
+                      raise RuntimeError(f"Telegram API error: {body}")
+                  print(f"Успешно отправлен отчет {file_path}")
           EOF
