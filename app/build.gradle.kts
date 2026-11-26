@@ -46,6 +46,20 @@ android {
             it.useJUnitPlatform()
         }
     }
+
+        // Формируем имя файла: <имя проекта>-<версия>-<debug/release>.apk
+    applicationVariants.all {
+        val variant = this
+        variant.outputs
+            .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+            .forEach { output ->
+                val projectName = rootProject.name.lowercase()
+                val version = variant.versionName
+                val buildType = variant.buildType.name
+
+                output.outputFileName = "$projectName-$version-$buildType.apk"
+            }
+    }
 }
 
 dependencies {
