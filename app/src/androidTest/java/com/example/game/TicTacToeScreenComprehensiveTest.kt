@@ -3,6 +3,7 @@ package com.example.game.ui
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.lifecycle.SavedStateHandle
 import com.example.game.domain.GameBoard
 import com.example.game.domain.CellState
 import com.example.game.domain.Player
@@ -11,6 +12,7 @@ import com.example.game.presentation.UiIntent
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.Assert.assertEquals
 
 /**
  * UI-тесты для TicTacToeScreen
@@ -24,7 +26,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `screen_idle_displaysTitleAndStartButton`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         composeTestRule.onNodeWithText("Крестики-нолики").assertIsDisplayed()
@@ -34,7 +36,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `screen_playing_displaysStatusAndScore`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -48,7 +50,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `screen_playing_displaysBoardCells`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -62,7 +64,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `screen_playing_xMakesFirstMove`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -75,7 +77,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `screen_playing_oMakesSecondMove`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -89,7 +91,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `screen_gameOver_displaysWinnerMessage`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -103,7 +105,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `screen_gameOver_displaysGameOverScreen`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -118,7 +120,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `screen_gameOver_displaysFinalScore`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -142,7 +144,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `screen_gameOver_drawDisplaysDrawMessage`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -157,7 +159,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `screen_gameOver_boardIsLockedAfterWin`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -178,7 +180,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `screen_playing_ignoresClickOnOccupiedCell`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -191,7 +193,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `testTag_board_isPresent`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -201,7 +203,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `testTag_status_isPresent`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -211,7 +213,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `testTag_scores_isPresent`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -221,7 +223,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `testTag_action_buttons_isPresent`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -231,7 +233,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `testTag_btn_start_isPresentInIdleScreen`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         composeTestRule.onNodeWithTag("btn_start_idle").assertIsDisplayed()
@@ -240,7 +242,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `testTag_btn_continue_isPresentInGameOverScreen`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -254,7 +256,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `testTag_btn_new_game_isPresentInPlayingAndGameOver`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         // Проверяем в PLAYING
@@ -271,7 +273,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `testTag_allCellsArePresent`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -284,7 +286,7 @@ class TicTacToeScreenUITest {
     @Test
     fun `testTag_win_line_isPresentDuringGameOverAnimation`() {
         composeTestRule.setContent {
-            TicTacToeScreen(viewModel = TicTacToeViewModel(suppressedSavedStateHandle()))
+            TicTacToeScreen(viewModel = TicTacToeViewModel(SavedStateHandle()))
         }
 
         viewModel.onIntent(UiIntent.StartGame)
@@ -298,5 +300,5 @@ class TicTacToeScreenUITest {
     }
 
     private val viewModel: TicTacToeViewModel
-        get() = composeTestRule.activityRule.activity.viewModel
+        get() = TicTacToeViewModel(SavedStateHandle())
 }
