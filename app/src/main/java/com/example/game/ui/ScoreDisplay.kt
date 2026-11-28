@@ -54,7 +54,7 @@ fun ScoreDisplay(
             Spacer(modifier = Modifier.width(16.dp))
 
             Text(
-                text = "Draw: $drawCount",
+                text = "Ничьи: $drawCount",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 fontWeight = FontWeight.Bold,

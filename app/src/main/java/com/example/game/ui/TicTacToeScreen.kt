@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+
 import androidx.compose.material3.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.runtime.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.example.game.domain.GameBoard
 import com.example.game.domain.GameState
 import com.example.game.ui.ActionButton
@@ -50,7 +52,7 @@ fun TicTacToeScreen(
         clickedIndices = emptySet()
     }
 
-    // Определяем, какие клетки выигрывают
+    // Определяем, какие клетки выигрываем
     val winningCells = uiState.board.isWinningCells ?: emptyList()
 
     Box(
@@ -181,6 +183,7 @@ fun PlayingScreen(
         // Игровое поле
         GameBoard(
             cells = uiState.board.cells,
+            winningCells = uiState.board.isWinningCells ?: emptyList(),
             onCellClick = onCellClick,
             isBoardLocked = uiState.isBoardLocked,
             isGameOverAnimating = uiState.isGameOverAnimating,
@@ -255,7 +258,7 @@ fun GameOverScreen(
                     color = MaterialTheme.colorScheme.secondary
                 )
                 Text(
-                    text = "Draw: ${uiState.drawCount}",
+                    text = "Ничьи: ${uiState.drawCount}",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.surfaceVariant
                 )
@@ -287,6 +290,7 @@ fun GameOverScreen(
 @Composable
 fun GameBoard(
     cells: List<CellState>,
+    winningCells: List<Int>,
     onCellClick: (Int) -> Unit,
     isBoardLocked: Boolean,
     isGameOverAnimating: Boolean,
@@ -301,32 +305,31 @@ fun GameBoard(
             ),
         contentAlignment = Alignment.Center
     ) {
-        // Сетка
-        Box(modifier = Modifier.fillMaxSize()) {
+        // Явная сетка 3×3 с видимыми границами
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             for (row in 0..2) {
-                for (col in 0..2) {
-                    val index = row * 3 + col
-
-                    Cell(
-                        index = index,
-                        cellState = cells[index],
-                        onCellClick = { onCellClick(index) },
-                        modifier = Modifier
-                            .align(
-                                if (col == 0) Alignment.TopStart
-                                else if (col == 2) Alignment.TopEnd
-                                else Alignment.CenterStart
-                            )
-                            .offset(
-                                when (col) {
-                                    0 -> 0.dp
-                                    1 -> 0.dp
-                                    2 -> 0.dp
-                                    else -> 0.dp
-                                }
-                            )
-                            .padding(1.dp)
-                    )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    for (col in 0..2) {
+                        val index = row * 3 + col
+                        
+                        Cell(
+                            index = index,
+                            cellState = cells[index],
+                            isWinningCell = winningCells.contains(index),
+                            isBoardLocked = isBoardLocked,
+                            onCellClick = { onCellClick(index) },
+                            modifier = Modifier
+                                .size(96.dp)
+                        )
+                    }
                 }
             }
         }
@@ -335,7 +338,9 @@ fun GameBoard(
         if (isGameOverAnimating) {
             WinLine(
                 board = com.example.game.domain.GameBoard(cells = cells),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(1f) // Линия поверх клеток
             )
         }
     }

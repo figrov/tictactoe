@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.example.game.domain.GameBoard
 
 /**
@@ -42,7 +43,8 @@ fun WinLine(
 
     Canvas(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .zIndex(0f), // Контроль z-index: линия под клетками, чтобы не перекрывать клики
         onDraw = {
             if (alpha <= 0f) return@Canvas
 

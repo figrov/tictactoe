@@ -3,6 +3,7 @@ package com.example.game.ui
 import androidx.compose.animation.core.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -27,6 +28,7 @@ fun Cell(
     cellState: CellState,
     isWinningCell: Boolean = false,
     isCellAnimating: Boolean = false,
+    isBoardLocked: Boolean = false,
     onCellClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -56,12 +58,22 @@ fun Cell(
 
     Box(
         modifier = modifier
-            .size(100.dp)
+            .clickable(
+                enabled = !isBoardLocked && cellState == CellState.EMPTY,
+                onClick = onCellClick,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            )
             .background(
                 if (isWinningCell)
                     MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
                 else
                     MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            )
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                shape = RoundedCornerShape(8.dp)
             )
             .scale(scale),
         contentAlignment = Alignment.Center
@@ -82,7 +94,16 @@ fun Cell(
                 )
             }
             CellState.EMPTY -> {
-                Box(modifier = Modifier.size(100.dp)) // Пустое пространство для клика
+                // Пустая клетка с видимым контуром для кликабельности
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                )
             }
         }
     }
