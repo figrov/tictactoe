@@ -1,27 +1,27 @@
 {
   "$schema": "https://kilo.ai",
+  "default_agent": "delivarable-man",
+  "snapshot": false,
   "permission": {
     "edit": "allow",
-    "doom_loop": "ask"
+    "doom_loop": "ask",
+    "bash": "allow"
   },
   "agent": {
-    "code": {
-      "steps": 12
-    },
-    "plan": {
-      "steps": 8
-    },
-    "orchestrator": {
-      "steps": 20
+    "delivarable-man": {
+      "steps": 30
     },
     "game-analyst": {
       "steps": 15
     },
     "android-dev": {
-      "steps": 25
+      "steps": 30
+    },
+    "build-controller": {
+      "steps": 20
     },
     "qa-engineer": {
-      "steps": 20
+      "steps": 25
     }
   }
 }

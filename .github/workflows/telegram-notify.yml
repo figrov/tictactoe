@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'docs/reports/*.md'
+      - 'docs/qa/*.md'
 
 jobs:
   send-report:
@@ -33,39 +34,26 @@ jobs:
           branch = os.environ["BRANCH_NAME"]
           sha = os.environ["COMMIT_SHA"][:7]
 
-          print(f"Диагностика: длина токена = {len(token)}, начинается на '{token[:4]}...', длина chat_id = {len(chat_id)}")
           if not token or not chat_id:
-              raise RuntimeError("ОШИБКА: TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID пустые! Проверь, что они в разделе Secrets (а не Variables) и имена написаны без опечаток.")
+              raise RuntimeError("ОШИБКА: TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID пустые!")
 
           diff = subprocess.check_output(
-              ["git", "diff", "--name-only", "HEAD~1", "HEAD", "--", "docs/reports/"],
+              ["git", "diff", "--name-only", "HEAD~1", "HEAD", "--", "docs/reports/", "docs/qa/"],
               text=True
           ).strip().splitlines()
 
           if not diff:
-              print("Изменений в отчетах не найдено.")
+              print("Изменений в отчетах и протоколах QA не найдено.")
               exit(0)
 
           host = "api." + "telegram.org"
-          for file_path in diff:
-              if not os.path.exists(file_path):
-                  continue
+          url = f"https://{host}/bot{token}/sendMessage"
 
-              with open(file_path, "r", encoding="utf-8") as f:
-                  content = f.read().strip()
-
-              if not content:
-                  continue
-
-              header = f"🌿 Ветка: {branch} ({sha})\n\n"
-              message = (header + content)[:4000]
-
-              url = f"https://{host}/bot{token}/sendMessage"
+          def send_tg(text_chunk):
               payload = json.dumps({
                   "chat_id": chat_id,
-                  "text": message
+                  "text": text_chunk
               }).encode("utf-8")
-
               req = urllib.request.Request(
                   url,
                   data=payload,
@@ -76,8 +64,25 @@ jobs:
                       body = json.loads(resp.read().decode("utf-8"))
                       if not body.get("ok"):
                           raise RuntimeError(f"Telegram API error: {body}")
-                      print(f"Успешно отправлен отчет {file_path}")
               except urllib.error.HTTPError as e:
                   err_body = e.read().decode("utf-8", errors="replace")
                   raise RuntimeError(f"Telegram HTTP {e.code}: {err_body}")
+
+          for file_path in diff:
+              if not os.path.exists(file_path):
+                  continue
+
+              with open(file_path, "r", encoding="utf-8") as f:
+                  content = f.read().strip()
+
+              if not content:
+                  continue
+
+              header = f"🌿 Ветка: {branch} ({sha})\n📄 Файл: {file_path}\n\n"
+              full_text = header + content
+
+              for i in range(0, len(full_text), 3900):
+                  send_tg(full_text[i:i+3900])
+
+              print(f"Успешно отправлен файл {file_path}")
           EOF
