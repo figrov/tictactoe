@@ -9,9 +9,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.game.ui.theme.TicTacToeTheme
 import com.example.game.ui.TicTacToeScreen
+import com.example.game.presentation.TicTacToeViewModel
 
 class MainActivity : ComponentActivity() {
-    private val viewModel: TicTacToeViewModel by viewModels()
+    private val viewModel: TicTacToeViewModel by viewModels<TicTacToeViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

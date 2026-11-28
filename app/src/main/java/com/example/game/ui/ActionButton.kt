@@ -1,7 +1,7 @@
 package com.example.game.ui
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -15,28 +15,28 @@ import androidx.compose.ui.unit.dp
  * @param text Текст кнопки
  * @param onClick Обработчик клика
  * @param enabled Доступность кнопки
- * @param testTag Тег для тестирования
  */
 @Composable
 fun ActionButton(
     text: String,
     onClick: () -> Unit,
-    enabled: Boolean,
-    testTag: String
+    enabled: Boolean
 ) {
-    val scale by animateFloatAsState(
-        targetValue = if (enabled) 1f else 1f,
-        animationSpec = tween(durationMillis = 100),
-        label = "ButtonScale"
-    )
+    val scale = remember { Animatable(if (enabled) 1f else 0.8f) }
+
+    LaunchedEffect(enabled) {
+        scale.animateTo(
+            targetValue = if (enabled) 1f else 0.8f,
+            animationSpec = tween(durationMillis = 100)
+        )
+    }
 
     Button(
         onClick = onClick,
         enabled = enabled,
         modifier = Modifier
             .fillMaxWidth()
-            .scale(scale)
-            .testTag(testTag),
+            .scale(scale.value),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary

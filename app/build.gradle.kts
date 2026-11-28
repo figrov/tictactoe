@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.example.game" // <-- Оставь свой package name, если он другой (например com.example.tictactoe)
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.game" // <-- Оставь свой applicationId, если он другой
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -35,6 +35,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
 
     buildFeatures {
@@ -88,6 +92,9 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.12")
     testImplementation("app.cash.turbine:turbine:1.1.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+    testImplementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
+    testImplementation("androidx.lifecycle:lifecycle-runtime:2.8.6")
+    testImplementation("androidx.lifecycle:lifecycle-viewmodel:2.8.6")
 
     // Compose UI-тесты (для облачного эмулятора)
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
@@ -96,3 +103,4 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
+

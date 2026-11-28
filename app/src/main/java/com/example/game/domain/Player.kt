@@ -12,4 +12,11 @@ enum class Player {
 
     val displayName: String
         get() = this.name
+
+    fun toCellState(): CellState {
+        return when (this) {
+            X -> CellState.X
+            O -> CellState.O
+        }
+    }
 }

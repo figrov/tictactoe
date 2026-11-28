@@ -21,7 +21,7 @@ fun ScoreDisplay(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.fillMaxWidth().testTag("scores"),
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
@@ -38,8 +38,7 @@ fun ScoreDisplay(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                modifier = Modifier.testTag("score_x")
+                fontSize = 18.sp
             )
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -49,8 +48,7 @@ fun ScoreDisplay(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.secondary,
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                modifier = Modifier.testTag("score_o")
+                fontSize = 18.sp
             )
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -60,8 +58,7 @@ fun ScoreDisplay(
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                modifier = Modifier.testTag("score_draw")
+                fontSize = 18.sp
             )
         }
     }

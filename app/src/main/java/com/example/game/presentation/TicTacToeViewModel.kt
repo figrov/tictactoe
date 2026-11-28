@@ -1,12 +1,13 @@
 package com.example.game.presentation
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.SavedStateHandle
 import com.example.game.domain.GameState
 import com.example.game.domain.GameBoard
 import com.example.game.domain.CellState
 import com.example.game.domain.Player
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.*
@@ -20,6 +21,8 @@ class TicTacToeViewModel(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    private val savedStateHandle: SavedStateHandle = savedStateHandle
+
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
@@ -28,7 +31,6 @@ class TicTacToeViewModel(
 
     init {
         loadSavedState(savedStateHandle)
-        setupRecomposition()
     }
 
     // Ключи для сохранения состояния
@@ -47,6 +49,8 @@ class TicTacToeViewModel(
             is UiIntent.NewGame -> handleNewGame()
             is UiIntent.ContinueGame -> handleContinueGame()
         }
+        // Сохраняем состояние после обработки каждого intent
+        saveState()
     }
 
     /**
@@ -73,97 +77,103 @@ class TicTacToeViewModel(
             return
         }
 
-        // Проверка валидности хода
-        if (!board.cells.isValidMove(index)) {
-            if (board.cells[index] != CellState.EMPTY) {
-                sendEffect(UiEffect.IgnoreOccupiedCell)
-            }
+        // Проверка валидности хода (клетка должна быть пустой)
+        if (board.cells[index] != CellState.EMPTY) {
+            sendEffect(UiEffect.IgnoreOccupiedCell)
             return
         }
 
-        // Запуск анимации клетки (локальная, не в UiState)
-        viewModelScope.launch {
-            kotlinx.coroutines.delay(150)
-            _uiState.value = currentState.copy(
-                isCellAnimating = currentState.isCellAnimating.toMutableMap().apply { this[index] = false }
-            )
-        }
+        // Сначала ставим символ в клетку
+        val newBoard = applyMove(board, index, null)
 
-        // Применяем ход
-        val newBoard = applyMove(board, index)
-
-        // Проверяем победу/ничью
-        val stateMachine = GameStateMachine(newBoard.cells, newBoard.isWinningCells)
-        val (isWin, winningCells) = stateMachine.checkWin()
-        val isDraw = stateMachine.checkDraw()
+        // Теперь проверяем победу/ничью на новой доске
+        val (isWin, winningCells) = newBoard.checkWin()
+        val isDraw = newBoard.checkDraw()
 
         // Обновляем состояние
         val updatedGameState: GameState
         val updatedMessage: String
+        val finalBoard: GameBoard
 
         if (isWin) {
-            // Победа
-            val winner = newBoard.isWinningCells!![0]
-            updatedGameState = GameState.Playing(
-                newBoard.copy(
-                    winner = newBoard.cells[winner],
-                    isWinningCells = winningCells,
-                    currentPlayer = newBoard.cells[winner].opponent() // Следующий ход
-                )
+            // Победа - обновляем доску с информацией о победе и счетом
+            val winner = if (newBoard.cells[index] == CellState.X) Player.X else Player.O
+            val updatedScoreX = if (winner == Player.X) board.scoreX + 1 else board.scoreX
+            val updatedScoreO = if (winner == Player.O) board.scoreO + 1 else board.scoreO
+            
+            // Важно: используем board.scoreX и board.scoreO, а не newBoard.scoreX
+            finalBoard = newBoard.copy(
+                isWinningCells = winningCells,
+                winner = winner,
+                scoreX = updatedScoreX,
+                scoreO = updatedScoreO,
+                currentPlayer = winner // Победивший игрок остается текущим для отображения результата
             )
-            updatedMessage = "Победил ${newBoard.cells[winner].displayName()}!"
 
-            // Анимация завершения игры
+            updatedGameState = GameState.GameOver
+            updatedMessage = "Победил ${finalBoard.winner?.displayName}!"
+
+            // Сразу блокируем поле и обновляем счет
             _uiState.value = currentState.copy(
+                gameState = GameState.GameOver,
+                board = finalBoard,
+                isBoardLocked = true,
                 isGameOverAnimating = true,
-                isCellAnimating = currentState.isCellAnimating.toMutableMap().apply { this[index] = false }
+                message = updatedMessage
             )
 
-            // Запускаем таймер для снятия блокировки
+            // Запускаем анимацию
             viewModelScope.launch {
-                kotlinx.coroutines.delay(300) // Задержка для анимации линии победы
-                _uiState.value = currentState.copy(
+                delay(300) // Задержка для анимации линии победы
+                _uiState.value = _uiState.value.copy(
                     gameState = GameState.GameOver,
+                    board = finalBoard,
                     isBoardLocked = true,
                     isGameOverAnimating = false,
-                    isCellAnimating = currentState.isCellAnimating.toMutableMap().apply { this[index] = false }
+                    message = updatedMessage
                 )
                 sendEffect(UiEffect.WinnerFound)
             }
         } else if (isDraw) {
-            // Ничья
-            updatedGameState = GameState.Playing(
-                newBoard.copy(
-                    drawCount = board.drawCount + 1
-                )
+            // Ничья - обновляем доску с увеличением счетчика ничьих
+            finalBoard = newBoard.copy(
+                drawCount = board.drawCount + 1,
+                currentPlayer = board.currentPlayer.opponent // При ничьей ход переходит к другому игроку
             )
+
+            updatedGameState = GameState.GameOver
             updatedMessage = "Ничья!"
 
+            // Сразу блокируем поле
             _uiState.value = currentState.copy(
+                gameState = GameState.GameOver,
+                board = finalBoard,
+                isBoardLocked = true,
                 isGameOverAnimating = true,
-                isCellAnimating = currentState.isCellAnimating.toMutableMap().apply { this[index] = false }
+                message = updatedMessage
             )
 
             viewModelScope.launch {
-                kotlinx.coroutines.delay(300)
-                _uiState.value = currentState.copy(
+                delay(300)
+                _uiState.value = _uiState.value.copy(
                     gameState = GameState.GameOver,
+                    board = finalBoard,
                     isBoardLocked = true,
                     isGameOverAnimating = false,
-                    isCellAnimating = currentState.isCellAnimating.toMutableMap().apply { this[index] = false }
+                    message = updatedMessage
                 )
                 sendEffect(UiEffect.DrawFound)
             }
         } else {
-            // Продолжение игры
-            updatedGameState = GameState.Playing(
-                newBoard.copy(currentPlayer = board.currentPlayer.opponent())
-            )
-            updatedMessage = "Ход: ${newBoard.currentPlayer.displayName()}"
+            // Продолжение игры - просто применяем ход и меняем игрока
+            val boardWithSwitchedPlayer = newBoard.copy(currentPlayer = newBoard.currentPlayer.opponent)
+            updatedGameState = GameState.Playing(boardWithSwitchedPlayer)
+            updatedMessage = "Ход: ${boardWithSwitchedPlayer.currentPlayer.displayName}"
 
             _uiState.value = currentState.copy(
                 gameState = updatedGameState,
-                isCellAnimating = currentState.isCellAnimating.toMutableMap().apply { this[index] = false },
+                board = boardWithSwitchedPlayer,
+                isBoardLocked = false, // Поле не заблокировано в обычном ходе
                 message = updatedMessage
             )
             sendEffect(UiEffect.ClickEmptyCell)
@@ -171,17 +181,28 @@ class TicTacToeViewModel(
     }
 
     /**
-     * Применяем ход на доску
+     * Применяем ход на доску с глубоким клонированием
      */
-    private fun applyMove(board: GameBoard, index: Int): GameBoard {
-        val newCells = board.cells.toMutableList()
-        newCells[index] = board.currentPlayer
+    private fun applyMove(board: GameBoard, index: Int, isWinningCells: List<Int>? = null): GameBoard {
+        val newCells = board.cells.mapIndexed { i, cellState ->
+            if (i == index) {
+                board.currentPlayer.toCellState()
+            } else {
+                cellState
+            }
+        }
 
-        return board.copy(
+        val newBoard = board.copy(
             cells = newCells,
-            isWinningCells = null, // Сбрасываем выигрышные клетки до проверки
-            winner = null
+            isWinningCells = isWinningCells,
+            winner = if (isWinningCells != null) board.currentPlayer else board.winner,
+            currentPlayer = board.currentPlayer, // Игрок меняется только после проверки победы/ничьей
+            scoreX = board.scoreX, // Сохраняем счет
+            scoreO = board.scoreO, // Сохраняем счет
+            drawCount = board.drawCount // Сохраняем счет ничьих
         )
+
+        return newBoard
     }
 
     /**
@@ -190,16 +211,14 @@ class TicTacToeViewModel(
     private fun handleNewGame() {
         val currentState = _uiState.value
 
-        viewModelScope.launch {
-            kotlinx.coroutines.delay(200)
-            _uiState.value = currentState.copy(
-                gameState = GameState.Idle,
-                board = GameBoard.INITIAL,
-                isBoardLocked = false,
-                message = "Добро пожаловать в крестики-нолики!"
-            )
-            sendEffect(UiEffect.NewGame)
-        }
+        _uiState.value = currentState.copy(
+            gameState = GameState.Idle,
+            board = GameBoard.INITIAL,
+            isBoardLocked = false,
+            isGameOverAnimating = false,
+            message = "Добро пожаловать в крестики-нолики!"
+        )
+        sendEffect(UiEffect.NewGame)
     }
 
     /**
@@ -209,53 +228,31 @@ class TicTacToeViewModel(
         val currentState = _uiState.value
         val board = currentState.board
 
-        viewModelScope.launch {
-            kotlinx.coroutines.delay(200)
-            val newState = when (val winner = board.winner) {
-                is Player.X -> {
-                    currentState.copy(
-                        gameState = GameState.Playing(
-                            GameBoard(
-                                cells = List(9) { CellState.EMPTY },
-                                currentPlayer = Player.O,
-                                scoreX = board.scoreX + 1
-                            )
-                        ),
-                        isBoardLocked = false,
-                        message = "Ход: O"
-                    )
-                }
-                is Player.O -> {
-                    currentState.copy(
-                        gameState = GameState.Playing(
-                            GameBoard(
-                                cells = List(9) { CellState.EMPTY },
-                                currentPlayer = Player.X,
-                                scoreO = board.scoreO + 1
-                            )
-                        ),
-                        isBoardLocked = false,
-                        message = "Ход: X"
-                    )
-                }
-                else -> {
-                    currentState.copy(
-                        gameState = GameState.Playing(
-                            GameBoard(
-                                cells = List(9) { CellState.EMPTY },
-                                currentPlayer = Player.X,
-                                drawCount = board.drawCount + 1
-                            )
-                        ),
-                        isBoardLocked = false,
-                        message = "Ход: X"
-                    )
-                }
-            }
+        // Создаем новую доску с сохранением счета
+        val newBoard = GameBoard(
+            cells = List(9) { CellState.EMPTY },
+            currentPlayer = when (board.winner) {
+                Player.X -> Player.O  // Очередной ход после X — это O
+                Player.O -> Player.X  // Очередной ход после O — это X
+                else -> Player.X  // При ничьей или начальной игре, начинаем с X
+            },
+            scoreX = board.scoreX,
+            scoreO = board.scoreO,
+            drawCount = board.drawCount,
+            winner = null,
+            isWinningCells = null
+        )
 
-            _uiState.value = newState
-            sendEffect(UiEffect.NewRound)
-        }
+        val newState = currentState.copy(
+            gameState = GameState.Playing(newBoard),
+            board = newBoard,
+            isBoardLocked = false, // Явно устанавливаем false при новой партии
+            isGameOverAnimating = false,
+            message = "Ход: ${newBoard.currentPlayer.displayName}"
+        )
+
+        _uiState.value = newState
+        sendEffect(UiEffect.NewRound)
     }
 
     /**
@@ -266,20 +263,21 @@ class TicTacToeViewModel(
         val board = currentState.board
 
         viewModelScope.launch {
-            kotlinx.coroutines.delay(200)
-            val nextPlayer = board.winner?.opponent() ?: Player.X
+            delay(200)
+            val nextPlayer = board.winner?.opponent ?: Player.X
             _uiState.value = currentState.copy(
                 gameState = GameState.Playing(
                     GameBoard(
                         cells = List(9) { CellState.EMPTY },
                         currentPlayer = nextPlayer,
                         scoreX = board.scoreX,
-                        scoreO = board.scoreO
+                        scoreO = board.scoreO,
+                        winner = null,
+                        isWinningCells = null
                     )
                 ),
                 isBoardLocked = false,
-                message = "Ход: $nextPlayer",
-                isCellAnimating = mutableMapOf()
+                message = "Ход: $nextPlayer"
             )
             sendEffect(UiEffect.NewRound)
         }
@@ -295,49 +293,26 @@ class TicTacToeViewModel(
     }
 
     /**
-     * Получаем эффекты из канала
-     */
-    private fun consumeEffects(channel: ReceiveChannel<UiEffect>): Flow<UiEffect> {
-        return channel.consumeEach { effect ->
-            // Обработка эффектов здесь
-        }.flow()
-    }
-
-    /**
      * Загрузка сохраненного состояния из SavedStateHandle
      */
     private fun loadSavedState(savedStateHandle: SavedStateHandle) {
-        val gameStateOrdinal = savedStateHandle.get<Int>(KEY_GAME_STATE)
-        val boardString = savedStateHandle.get<String>(KEY_BOARD_STRING)
-        val message = savedStateHandle.get<String>(KEY_MESSAGE)
-
-        if (gameStateOrdinal != null && boardString != null) {
-            // Восстанавливаем GameState из ordinal
-            val restoredGameState = GameStateType.values()[gameStateOrdinal]
-            val gameState = when (restoredGameState) {
-                GameStateType.IDLE -> GameState.Idle
-                GameStateType.PLAYING -> {
-                    val restoredBoard = restoreGameBoardFromString(boardString)
-                    if (restoredBoard != null) {
-                        GameState.Playing(restoredBoard)
-                    } else {
-                        GameState.Idle
-                    }
+        try {
+            val boardString = savedStateHandle.get<String>(KEY_BOARD_STRING)
+            if (boardString != null) {
+                val restoredBoard = restoreGameBoardFromString(boardString)
+                if (restoredBoard != null) {
+                    _uiState.value = UiState(
+                        gameState = GameState.Playing(restoredBoard),
+                        board = restoredBoard,
+                        isBoardLocked = false,
+                        isGameOverAnimating = false,
+                        message = "Добро пожаловать в крестики-нолики!"
+                    )
                 }
-                GameStateType.GAME_OVER -> GameState.GameOver
-                GameStateType.PAUSED -> GameState.Paused
             }
-
-            // Восстанавливаем UiState
-            val restoredUiState = UiState(
-                gameState = gameState,
-                board = restoredBoard ?: GameBoard.INITIAL,
-                isBoardLocked = restoredGameState != GameStateType.PLAYING,
-                isGameOverAnimating = false,
-                message = message ?: "Добро пожаловать в крестики-нолики!"
-            )
-
-            _uiState.value = restoredUiState
+        } catch (e: Exception) {
+            // Ignore errors during state restoration
+            _uiState.value = UiState()
         }
     }
 
@@ -346,11 +321,9 @@ class TicTacToeViewModel(
      */
     private fun saveState() {
         val currentState = _uiState.value
-        val gameStateOrdinal = currentState.gameState.gameState.ordinal
         val boardString = formatGameBoardToString(currentState.board)
         val message = currentState.message
 
-        savedStateHandle[KEY_GAME_STATE] = gameStateOrdinal
         savedStateHandle[KEY_BOARD_STRING] = boardString
         savedStateHandle[KEY_MESSAGE] = message
     }
@@ -395,9 +368,6 @@ class TicTacToeViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        // Закрываем канал эффектов
-        viewModelScope.launch {
-            _effects.consumeEach { effect -> }
-        }
+        // Канал будет автоматически закрыт при завершении coroutineScope
     }
 }

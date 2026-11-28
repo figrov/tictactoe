@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.game.domain.GameStateMachineTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-11-28T13:02:31" hostname="PC" time="0.054">
+  <properties/>
+  <testcase name="isValidMove - недопустим занятый индекс()" classname="com.example.game.domain.GameStateMachineTest" time="0.002"/>
+  <testcase name="isValidMove - допустим пустой индекс()" classname="com.example.game.domain.GameStateMachineTest" time="0.001"/>
+  <testcase name="checkWin - победа по горизонтали (0,1,2)()" classname="com.example.game.domain.GameStateMachineTest" time="0.001"/>
+  <testcase name="checkWin - победа по горизонтали (3,4,5)()" classname="com.example.game.domain.GameStateMachineTest" time="0.001"/>
+  <testcase name="checkWin - победа по горизонтали (6,7,8)()" classname="com.example.game.domain.GameStateMachineTest" time="0.001"/>
+  <testcase name="checkDraw - не ничья при заполненных клетках с победителем()" classname="com.example.game.domain.GameStateMachineTest" time="0.001"/>
+  <testcase name="checkDraw - не ничья при неполной доске()" classname="com.example.game.domain.GameStateMachineTest" time="0.001"/>
+  <testcase name="checkWin - победа по вертикали (0,3,6)()" classname="com.example.game.domain.GameStateMachineTest" time="0.002"/>
+  <testcase name="checkWin - победа по вертикали (1,4,7)()" classname="com.example.game.domain.GameStateMachineTest" time="0.012"/>
+  <testcase name="checkWin - победа по вертикали (2,5,8)()" classname="com.example.game.domain.GameStateMachineTest" time="0.002"/>
+  <testcase name="isValidMove - недопустим индекс вне диапазона()" classname="com.example.game.domain.GameStateMachineTest" time="0.002"/>
+  <testcase name="checkWin - победа по диагонали (0,4,8)()" classname="com.example.game.domain.GameStateMachineTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

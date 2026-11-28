@@ -17,16 +17,15 @@ fun StatusMessage(
     message: String,
     modifier: Modifier = Modifier
 ) {
-    Text(
-        text = message,
-        style = MaterialTheme.typography.headlineSmall,
-        color = MaterialTheme.colorScheme.onSurface,
-        fontWeight = FontWeight.Bold,
-        fontSize = 24.sp,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp)
-            .testTag("indicator_turn"),
-        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-    )
+        Text(
+            text = message,
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
 }

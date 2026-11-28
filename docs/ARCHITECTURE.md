@@ -15,10 +15,14 @@
 - `Player.kt` — перечисление игроков X/O.
 - `GameState.kt` — sealed interface состояний игры (Idle, Playing, GameOver).
 - `CellState.kt` — состояния клетки (EMPTY, X, O).
-- `GameBoard.kt` — управление игровым полем и проверкой победы.
+- `GameBoard.kt` — управление игровым полем:
+  - `isValidMove(index: Int): Boolean` — проверка валидности хода
+  - `checkWin(): Pair<Boolean, List<Int>?>` — проверка победы (возвращает Pair<есть_ли_победитель, список_выигравших_клеток>)
+  - `checkDraw(): Boolean` — проверка ничьи (все клетки заполнены, победителя нет)
+  - `getWinningCombinations(): List<List<Int>>` — получение всех выигрышных комбинаций (горизонтали, вертикали, диагонали)
 
 ### Presentation слой (MVI-архитектура)
-- `TicTacToeViewModel.kt` — ViewModel с UiState, UiIntent, UiEffect.
+- `TicTacToeViewModel.kt` — ViewModel с UiState, UiIntent, UiEffect (исправлены критические баги: порядок проверки победы, обновление board, корректное сохранение состояния).
 - `UiState.kt` — sealed класс состояния UI.
 - `UiIntent.kt` — sealed класс намерений пользователя.
 - `UiEffect.kt` — sealed класс эффектов (звук, вибрация, подтверждение).
@@ -35,6 +39,12 @@
 - `ScoreDisplay.kt` — счетчик X/O/Draw (testTag: scores, score_x, score_o, score_draw).
 - `ActionButtons.kt` — контейнер кнопок действий (testTag: action_buttons, btn_start, btn_continue, btn_new_game).
 - `ActionButton.kt` — кнопка с анимацией нажатия.
+
+### Ключевые исправления в TicTacToeViewModel:
+- **handleCellClicked()**: Исправлен порядок проверки победы (сначала ставим символ, потом проверяем) и обновление board во всех ветках
+- **handleNewRound()/handleNewGame()**: Удалены лишние delay(200) для мгновенного обновления
+- **init**: Удален setupRecomposition() для избежания UncaughtExceptionsBeforeTest
+- **onIntent()**: Добавлен saveState() в конце для корректного сохранения состояния
 
 ### Entry point
 - `MainActivity.kt` — точка входа, навигация на TicTacToeScreen.

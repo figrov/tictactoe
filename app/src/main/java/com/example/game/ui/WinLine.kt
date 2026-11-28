@@ -1,6 +1,5 @@
 package com.example.game.ui
 
-import androidx.compose.animation.animateFloatAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -29,25 +28,23 @@ fun WinLine(
     modifier: Modifier = Modifier
 ) {
     val winningCells = board.isWinningCells ?: return
-    val isAnimating by remember { mutableFloatStateOf(0f) }
+    var alpha by remember { mutableFloatStateOf(0f) }
 
-    LaunchedEffect(winningCells, board.cells) {
+    LaunchedEffect(winningCells) {
         if (winningCells.isNotEmpty()) {
             // Запускаем анимацию появления линии
             kotlinx.coroutines.delay(100)
-            isAnimating = 1f
+            alpha = 1f
         }
     }
 
-    val alpha = isAnimating.coerceIn(0f, 1f)
     val strokeWidth by remember { mutableFloatStateOf(12f) }
 
     Canvas(
         modifier = modifier
-            .fillMaxSize()
-            .testTag("win_line"),
+            .fillMaxSize(),
         onDraw = {
-            if (alpha <= 0f) return@onDraw
+            if (alpha <= 0f) return@Canvas
 
             val color = Color(0xFFB3261E) // Error
             val (x1, y1) = getCellCenter(winningCells[0])

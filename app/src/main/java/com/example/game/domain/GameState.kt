@@ -16,6 +16,10 @@ sealed interface GameState {
         val board: GameBoard
     ) : GameState {
         override val gameState = GameStateType.PLAYING
+
+        val winner: Player? get() = board.winner
+        val isWinningCells: List<Int>? get() = board.isWinningCells
+        val drawCount: Int get() = board.drawCount
     }
 
     object GameOver : GameState {

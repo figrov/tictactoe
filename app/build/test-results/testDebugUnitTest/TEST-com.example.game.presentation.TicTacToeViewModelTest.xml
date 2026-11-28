@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.game.presentation.TicTacToeViewModelTest" tests="18" skipped="0" failures="0" errors="0" timestamp="2026-11-28T13:02:31" hostname="PC" time="0.651">
+  <properties/>
+  <testcase name="onIntent_NewRound_счет_ничьих_увеличивается()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.442"/>
+  <testcase name="onIntent_CellClicked_клонирует_доску_после_хода()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.011"/>
+  <testcase name="onIntent_CellClicked_победа_X_по_горизонтали_0_1_2()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.027"/>
+  <testcase name="onIntent_NewRound_счет_O_увеличивается()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.014"/>
+  <testcase name="onIntent_CellClicked_игнорирует_клик_по_занятой_клетке()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.008"/>
+  <testcase name="onIntent_NewRound_корректно_обрабатывает_ничью()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.014"/>
+  <testcase name="onIntent_NewRound_сохраняет_счет()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.01"/>
+  <testcase name="onIntent_NewRound_счет_X_увеличивается()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.015"/>
+  <testcase name="onIntent_CellClicked_победа_X_по_вертикали_0_3_6()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.008"/>
+  <testcase name="onIntent_CellClicked_ничья()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.011"/>
+  <testcase name="onIntent_NewRound_сбрасывает_счет_и_поле_в_IDLE()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.009"/>
+  <testcase name="onIntent_CellClicked_победа_O()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.009"/>
+  <testcase name="isBoardLocked_true_после_победы_false_после_NewRound()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.008"/>
+  <testcase name="onIntent_CellClicked_0_первый_ход_X_на_клетку_0()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.007"/>
+  <testcase name="onIntent_CellClicked_победа_X_по_диагонали_0_4_8()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.009"/>
+  <testcase name="onIntent_StartGame_переключает_на_PLAYING_очищает_поле_ход_X()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.009"/>
+  <testcase name="currentPlayer - корректный игрок после хода()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.006"/>
+  <testcase name="onIntent_StartGame_корректно_инициализирует_состояние()" classname="com.example.game.presentation.TicTacToeViewModelTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

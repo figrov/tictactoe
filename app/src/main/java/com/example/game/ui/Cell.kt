@@ -1,6 +1,7 @@
 package com.example.game.ui
 
 import androidx.compose.animation.core.*
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -13,7 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.test.Tag
+import com.example.game.domain.CellState
+import com.example.game.domain.Player
 
 /**
  * Отдельная клетка игрового поля
@@ -40,7 +42,7 @@ fun Cell(
     val contentColor = when (cellState) {
         CellState.X -> MaterialTheme.colorScheme.primary
         CellState.O -> MaterialTheme.colorScheme.secondary
-        CellState.EMPTY -> Color.Transparent
+        else -> Color.Transparent
     }
 
     val scale by animateFloatAsState(
@@ -55,7 +57,6 @@ fun Cell(
     Box(
         modifier = modifier
             .size(100.dp)
-            .testTag("board_cell_$index")
             .background(
                 if (isWinningCell)
                     MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)

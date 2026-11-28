@@ -1,9 +1,9 @@
 package com.example.game.domain
 
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 
 /**
  * Тесты для GameBoard и доменных классов
@@ -76,62 +76,62 @@ class GameBoardTest {
     }
 
     @Test
-    fun `CellState.EMPTY - isEmpty возвращает true`() {
-        assertTrue(CellState.EMPTY.isEmpty())
+    fun `CellState_EMPTY - isEmpty возвращает true`() {
+        assertTrue(CellState.EMPTY.isEmpty)
     }
 
     @Test
-    fun `CellState.X - isEmpty возвращает false`() {
-        assertFalse(CellState.X.isEmpty())
+    fun `CellState_X - isEmpty возвращает false`() {
+        assertFalse(CellState.X.isEmpty)
     }
 
     @Test
-    fun `CellState.O - isEmpty возвращает false`() {
-        assertFalse(CellState.O.isEmpty())
+    fun `CellState_O - isEmpty возвращает false`() {
+        assertFalse(CellState.O.isEmpty)
     }
 
     @Test
-    fun `CellState.X - isMarked возвращает true`() {
+    fun `CellState_X_isMarked_возвращает_true`() {
         assertTrue(CellState.X.isMarked)
     }
 
     @Test
-    fun `CellState.O - isMarked возвращает true`() {
+    fun `CellState_O_isMarked_возвращает_true`() {
         assertTrue(CellState.O.isMarked)
     }
 
     @Test
-    fun `CellState.EMPTY - isMarked возвращает false`() {
+    fun `CellState_EMPTY_isMarked_возвращает_false`() {
         assertFalse(CellState.EMPTY.isMarked)
     }
 
     @Test
-    fun `Player.X - opponent возвращает O`() {
+    fun `Player_X_opponent_возвращает_O`() {
         assertEquals(Player.O, Player.X.opponent)
     }
 
     @Test
-    fun `Player.O - opponent возвращает X`() {
+    fun `Player_O_opponent_возвращает_X`() {
         assertEquals(Player.X, Player.O.opponent)
     }
 
     @Test
-    fun `Player.X - displayName возвращает "X"`() {
+    fun `Player_X_displayName_возвращает_X`() {
         assertEquals("X", Player.X.displayName)
     }
 
     @Test
-    fun `Player.O - displayName возвращает "O"`() {
+    fun `Player_O_displayName_возвращает_O`() {
         assertEquals("O", Player.O.displayName)
     }
 
     @Test
-    fun `Player.X - name возвращает "X"`() {
+    fun `Player_X_name_возвращает_X`() {
         assertEquals("X", Player.X.name)
     }
 
     @Test
-    fun `Player.O - name возвращает "O"`() {
+    fun `Player_O_name_возвращает_O`() {
         assertEquals("O", Player.O.name)
     }
 

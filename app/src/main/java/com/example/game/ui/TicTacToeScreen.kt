@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,8 +19,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.test.Tag
 import com.example.game.domain.GameBoard
+import com.example.game.domain.GameState
+import com.example.game.ui.ActionButton
+import com.example.game.ui.ActionButtons
 import com.example.game.domain.CellState
 import com.example.game.domain.Player
 import com.example.game.presentation.TicTacToeViewModel
@@ -53,7 +56,6 @@ fun TicTacToeScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .testTag("board")
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.TopCenter
     ) {
@@ -116,8 +118,7 @@ fun IdleScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp)
-            .testTag("screen_idle"),
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -139,8 +140,7 @@ fun IdleScreen(
         ActionButton(
             text = "Начать игру",
             onClick = onStartGame,
-            enabled = true,
-            testTag = "btn_start_idle"
+            enabled = true
         )
     }
 }
@@ -159,8 +159,7 @@ fun PlayingScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
-            .testTag("screen_playing"),
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -212,16 +211,15 @@ fun GameOverScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp)
-            .testTag("screen_game_over"),
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         // Сообщение о результате
         val resultText = when (uiState.board.winner) {
-            is Player.X -> "Победил X!"
-            is Player.O -> "Победил O!"
-            else -> "Ничья!"
+            Player.X -> "Победил X!"
+            Player.O -> "Победил O!"
+            null -> "Ничья!"
         }
 
         Text(
@@ -270,8 +268,7 @@ fun GameOverScreen(
         ActionButton(
             text = "Продолжить",
             onClick = onContinue,
-            enabled = true,
-            testTag = "btn_continue"
+            enabled = true
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -279,8 +276,7 @@ fun GameOverScreen(
         ActionButton(
             text = "Новая игра",
             onClick = onNewGame,
-            enabled = true,
-            testTag = "btn_new_game"
+            enabled = true
         )
     }
 }
@@ -302,8 +298,7 @@ fun GameBoard(
             .background(
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
                 shape = RoundedCornerShape(16.dp)
-            )
-            .testTag("grid"),
+            ),
         contentAlignment = Alignment.Center
     ) {
         // Сетка
@@ -315,8 +310,7 @@ fun GameBoard(
                     Cell(
                         index = index,
                         cellState = cells[index],
-                        isWinningCell = false,
-                        onCellClick = onCellClick,
+                        onCellClick = { onCellClick(index) },
                         modifier = Modifier
                             .align(
                                 if (col == 0) Alignment.TopStart
